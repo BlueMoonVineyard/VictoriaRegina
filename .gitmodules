@@ -1,0 +1,3 @@
+[submodule "Civ"]
+	path = Civ
+	url = git@github.com:CivMC/Civ.git
