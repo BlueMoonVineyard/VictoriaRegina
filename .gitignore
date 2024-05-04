@@ -1,3 +1,4 @@
 ssh-config
 Builds/*/*.jar
 Builds/*/*.txt
+BuiltConfig

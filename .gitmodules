@@ -1,3 +1,6 @@
 [submodule "Civ"]
 	path = Civ
 	url = git@github.com:CivMC/Civ.git
+[submodule "PrivateConfig"]
+	path = PrivateConfig
+	url = git@github.com:BlueMoonVineyard/VictoriaReginaPrivate.git

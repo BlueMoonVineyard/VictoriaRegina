@@ -90,7 +90,7 @@ sftp:
 	system("sshpass", "-p", $data{'sftp'}{'pass'}, "sftp", "-F", "ssh-config", "civunion");
 
 upload-paper-all:
-	just --justfile {{justfile()}} upload-paper banstick bastion citadel civchat2 civduties civmodcore civspy combattagplus essenceglue exilepearl factorymod finale hiddenore itemexchange jukealert kirabukkitgateway namecolors namelayer namelayer railswitch randomspawn realisticbiomes simpleadminhacks
+	just --justfile {{justfile()}} upload-paper banstick bastion citadel civchat2 civduties civmodcore civspy combattagplus essenceglue exilepearl factorymod finale hiddenore itemexchange jukealert kirabukkitgateway namecolors namelayer namelayer railswitch randomspawn realisticbiomes simpleadminhacks BreweryNG
 
 # upload paper plugins
 upload-paper +args:
@@ -111,3 +111,35 @@ upload-paper +args:
 
 	system("sshpass", "-p", $data{'sftp'}{'pass'}, "scp", "-F", "ssh-config", @args, "civunion:/plugins/");
 
+# download paper plugins
+download-paper +args:
+	#!/usr/bin/env perl
+
+	use YAML::XS qw(Load);
+	use File::Slurp qw(read_file write_file);
+
+	my $yaml = read_file "paper-plugins.yml";
+	my %plugins = %{ Load $yaml };
+
+	foreach my $arg (@ARGV) {
+		my %plugin = %{$plugins{$arg}};
+		print %plugin;
+		system("wget", $plugin{'url'}, "-O", "Builds/Paper/" . $arg . ".jar");
+		write_file("Builds/Paper/" . $arg . ".version.txt", { binmode => ':raw' }, $plugin{'version'});
+	}
+
+# build the config files
+build-config:
+	cp -r PrivateConfig/* BuiltConfig/
+	cp -r Config/* BuiltConfig/
+
+# upload built config to the server
+upload-config:
+	#!/usr/bin/env perl
+
+	use YAML::XS qw(Load);
+
+	my $secrets = `ansible-vault view secrets`;
+	my %data = %{ Load $secrets };
+
+	system("sshpass", "-p", $data{'sftp'}{'pass'}, "scp", "-r", "-F", "ssh-config", glob("BuiltConfig/*"), "civunion:/plugins/");
